@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday - Digital Gift Template</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Playfair Display & Poppins -->
+    <link href="https://fonts.googleapis.com/css2?family=Amatic+SC:wght@400;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- GSAP CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="selection:bg-rose-900 selection:text-white">
+    <div id="birthday-loader" class="birthday-loader" role="status" aria-live="polite" aria-label="Memuat halaman ulang tahun">
+        <div class="birthday-loader__confetti" aria-hidden="true">
+            <span></span><span></span><span></span><span></span><span></span>
+            <span></span><span></span><span></span><span></span><span></span>
+        </div>
+        <div class="birthday-loader__main">
+            <div class="birthday-gift" aria-hidden="true">
+                <div class="birthday-gift__box"><span></span></div>
+                <div class="birthday-gift__lid"><span></span></div>
+                <div class="birthday-gift__bow"><i></i><i></i><b></b></div>
+            </div>
+            <div class="birthday-loader__copy">
+                <p class="birthday-loader__eyebrow">A LITTLE BIRTHDAY MAGIC</p>
+                <h1 class="birthday-loader__title">Birthday<br>Loading<span>...</span></h1>
+            </div>
+        </div>
+        <div id="birthday-loader-progress" class="birthday-loader__progress" role="progressbar" aria-label="Progress pemuatan" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+            <div id="birthday-loader-progress-fill" class="birthday-loader__progress-fill"></div>
+        </div>
+    </div>
+    <div class="ambient-particles" aria-hidden="true"></div>
+    <div class="party-pop-container" aria-hidden="true"></div>
+    <audio id="birthday-music" preload="auto"></audio>
+    <div id="music-player" class="music-player fixed bottom-5 right-5 z-50 flex items-center gap-3 rounded-xl border border-rose-200 bg-white/95 p-3 text-rose-950 shadow-xl backdrop-blur-sm transition-all duration-300">
+        <div class="music-player__details min-w-0 flex-1 overflow-hidden">
+            <div class="mb-2 flex items-center justify-between gap-3">
+                <span id="music-track-title" class="min-w-0 truncate text-sm font-semibold" title="Aku Milikmu - Dewa 19">Aku Milikmu - Dewa 19</span>
+            </div>
+            <div class="flex items-center gap-2 text-[11px] tabular-nums text-rose-800">
+                <span id="music-current-time">0:00</span>
+                <input id="music-progress" type="range" min="0" max="1000" value="0" step="1" aria-label="Posisi musik" class="w-full cursor-pointer accent-rose-800">
+                <span id="music-duration">0:00</span>
+            </div>
+        </div>
+        <div class="music-player__controls flex flex-shrink-0 items-center gap-1">
+            <button id="music-expand" type="button" aria-label="Tampilkan kontrol musik" aria-expanded="false" title="Tampilkan kontrol musik" class="music-player__expand h-9 w-9 items-center justify-center rounded-full transition hover:bg-rose-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-rose-800">
+                <i class="fa-solid fa-ellipsis" aria-hidden="true"></i>
+            </button>
+            <button id="music-previous-track" type="button" aria-label="Lagu sebelumnya" title="Lagu sebelumnya" class="music-player__skip flex h-9 w-9 items-center justify-center rounded-full transition hover:bg-rose-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-rose-800">
+                <i class="fa-solid fa-backward-step" aria-hidden="true"></i>
+            </button>
+            <button id="music-toggle" type="button" aria-label="Play music" title="Aku Milikmu - Dewa 19" class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-rose-900 text-white shadow transition hover:bg-rose-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose-900">
+                <i class="fa-solid fa-play" aria-hidden="true"></i>
+            </button>
+            <button id="music-next-track" type="button" aria-label="Lagu berikutnya" title="Lagu berikutnya" class="music-player__skip flex h-9 w-9 items-center justify-center rounded-full transition hover:bg-rose-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-rose-800">
+                <i class="fa-solid fa-forward-step" aria-hidden="true"></i>
+            </button>
+        </div>
+    </div>
+
+    <header class="w-full py-8 text-center text-[#5b2a31] relative z-10">
+        <h1 class="font-playfair font-bold tracking-[-0.06em] italic text-[#7d1d2c] template-title">
+            Happy Birthday
+        </h1>
+    </header>
+
+    <!-- Main Container Layout -->
+    <main class="relative z-10 max-w-4xl mx-auto px-4 py-8 flex flex-col gap-10">
+
+        <section class="maroon-card text-white p-6 md:p-10 rounded-2xl shadow-xl relative overflow-hidden border border-rose-900/50 hero-section">
+            <div class="absolute top-4 right-4 text-rose-400 text-xl opacity-40">
+                <i class="fa-solid fa-envelope-open-text"></i>
+            </div>
+            <div class="flex flex-col md:flex-row items-center gap-6">
+                <!-- Circular Profile Image -->
+                <div class="relative">
+                    <div class="w-36 h-36 md:w-44 md:h-44 rounded-full overflow-hidden border-4 border-rose-200/80 shadow-lg bg-rose-900 flex-shrink-0">
+                        <img src="fel.jpeg" alt="Foto ulang tahun" class="w-full h-full object-cover">
+                    </div>
+                    <div class="absolute -bottom-2 -right-2 bg-white text-rose-900 px-3 py-1 rounded-full text-xs font-bold shadow-md">
+                        <i class="fa-solid fa-cake-candles mr-1"></i> Special Day
+                    </div>
+                </div>
+                <!-- Title & Name info -->
+                <div class="text-center md:text-left">
+                    <h2 class="font-playfair text-3xl md:text-4xl font-bold text-[#7d1d2c] italic party-trigger cursor-pointer transition-transform duration-200 hover:scale-[1.02] active:scale-95">Happy Birthday</h2>
+                    <p class="text-xl tracking-wider font-medium text-[#7d1d2c] mt-1">Felisha Oktarina Kustantri</p>
+                    <p class="text-xs tracking-widest text-[#7d1d2c] mt-0.5">14.10.2010</p>
+                    <div class="mt-4 pt-4 border-t border-rose-800/60">
+                        <p class="font-playfair text-[#7d1d2c] italic text-sm md:text-base">"Happy Birthday, My Love.<br>A letter made just for you"</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="white-card birthday-note text-[#4a2e35] p-6 md:p-10 rounded-2xl shadow-xl border border-rose-200/50 relative">
+            <div class="text-center max-w-xl mx-auto">
+                <div id="birthday-message" hidden>
+                    <h3 class="mb-4 text-3xl md:text-4xl font-extrabold text-[#7d1d2c]">Happy Birthday</h3>
+                    <div class="space-y-4 text-left text-sm md:text-base leading-relaxed text-[#7d1d2c]">
+                        <p>i hope you’re doing well, and i hope you have a beautiful day filled with happiness and good moments.</p>
+                        <p>i don’t know if you’ll ever come back or not... but honestly, deep down, i still have a little hope that you will.</p>
+                        <p>i’m not trying to force you to come back. i just want you to know that if one day you feel like coming back, maybe there will still be a place for you here.</p>
+                        <p>maybe time will change a lot of things. maybe our feelings won’t be the same anymore. but until that day comes, i’ll still keep this small hope that we’ll meet again someday... whether as the same people we used to be, or as two people who have grown and learned from everything we’ve been through.</p>
+                        <p>for now, i just hope you enjoy your birthday and spend it surrounded by things that make you happy. no matter where life takes us, i’ll always be grateful for the memories we had. happy birthday, once again.</p>
+                    </div>
+                </div>
+                <!-- Mini Sticker Icons Row -->
+                <div class="flex justify-center items-center gap-4 mt-6">
+                    <div class="w-12 h-12 rounded-full overflow-hidden border-2 border-rose-300 shadow bg-white">
+                        <div class="flex h-full w-full items-center justify-center bg-rose-100 text-rose-700">
+                            <i class="fa-solid fa-heart text-lg" aria-hidden="true"></i>
+                        </div>
+                    </div>
+                    <button id="birthday-message-toggle" type="button" aria-expanded="false" aria-controls="birthday-message" aria-label="Tampilkan pesan ulang tahun" class="birthday-tape party-trigger cursor-pointer border-0 transition-transform duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose-900">
+                        HAPPY BIRTHDAY
+                    </button>
+                    <div class="w-12 h-12 rounded-full overflow-hidden border-2 border-rose-300 shadow bg-white">
+                        <div class="flex h-full w-full items-center justify-center bg-rose-100 text-rose-700">
+                            <i class="fa-solid fa-star text-lg" aria-hidden="true"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="memory-section maroon-card text-white p-6 md:p-10 rounded-2xl shadow-xl border border-rose-900/50">
+            <div class="text-center mb-6">
+                <h3 class="font-playfair text-2xl md:text-3xl font-bold tracking-wide italic text-red-400">one of my favorite moments</h3>
+                <div class="w-16 h-0.5 bg-rose-400/50 mx-auto mt-2"></div>
+            </div>
+            <!-- Polaroid Cards Grid -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 pt-2">
+                <!-- Polaroid 1 -->
+                <div class="bg-white text-neutral-800 p-2.5 pb-5 rounded shadow-lg transform -rotate-2 hover:rotate-0 transition duration-300">
+                    <div class="w-full h-32 bg-neutral-200 overflow-hidden rounded-sm mb-2">
+                        <img src="momnt1.jpeg" alt="Moment 1" class="w-full h-full object-cover">
+                    </div>
+                    <p class="text-[10px] text-center font-handwritten text-neutral-500 font-semibold">memory</p>
+                </div>
+                <!-- Polaroid 2 -->
+                <div class="bg-white text-neutral-800 p-2.5 pb-5 rounded shadow-lg transform rotate-1 hover:rotate-0 transition duration-300">
+                    <div class="w-full h-32 bg-neutral-200 overflow-hidden rounded-sm mb-2">
+                        <img src="moment2.jpeg" alt="Moment 2" class="w-full h-full object-cover">
+                    </div>
+                    <p class="text-[10px] text-center font-handwritten text-neutral-500 font-semibold">memory</p>
+                </div>
+                <!-- Polaroid 3 -->
+                <div class="bg-white text-neutral-800 p-2.5 pb-5 rounded shadow-lg transform -rotate-1 hover:rotate-0 transition duration-300">
+                    <div class="w-full h-32 bg-neutral-200 overflow-hidden rounded-sm mb-2">
+                        <img src="momnt3.jpeg" alt="Moment 3" class="w-full h-full object-cover">
+                    </div>
+                    <p class="text-[10px] text-center font-handwritten text-neutral-500 font-semibold">memory</p>
+                </div>
+                <!-- Polaroid 4 -->
+                <div class="bg-white text-neutral-800 p-2.5 pb-5 rounded shadow-lg transform rotate-2 hover:rotate-0 transition duration-300">
+                    <div class="w-full h-32 bg-neutral-200 overflow-hidden rounded-sm mb-2">
+                        <img src="moment4.jpeg" alt="Moment 4" class="w-full h-full object-cover">
+                    </div>
+                    <p class="text-[10px] text-center font-handwritten text-neutral-500 font-semibold">memory</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="white-card text-[#4a2e35] p-6 md:p-10 rounded-2xl shadow-xl border border-rose-200/50">
+            <div class="text-center mb-8">
+                <span class="bg-rose-900 text-rose-100 px-3 py-1 rounded text-xs font-semibold uppercase tracking-wider">reason I Love You</span>
+                <h3 class="font-playfair text-2xl md:text-3xl font-bold tracking-wide text-rose-900 mt-2">The Little Things That Matter</h3>
+            </div>
+            <!-- Grid of 6 Reasons -->
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-6">
+                <!-- Reason 1 -->
+                <div class="flex flex-col items-center text-center bg-white p-4 rounded-xl shadow-sm border border-rose-100">
+                    <div class="w-16 h-16 rounded-full overflow-hidden shadow-md mb-2 border border-rose-200">
+                        <img src="https://placehold.co/150x150/fbcfe8/881337?text=Smile" alt="Smile" class="w-full h-full object-cover">
+                    </div>
+                    <h4 class="font-semibold text-sm text-rose-900 mt-1">Your smile</h4>
+                    <p class="text-[11px] text-neutral-500 mt-0.5">Brightens up my darkest days instantly.</p>
+                </div>
+                <!-- Reason 2 -->
+                <div class="flex flex-col items-center text-center bg-white p-4 rounded-xl shadow-sm border border-rose-100">
+                    <div class="w-16 h-16 rounded-full overflow-hidden shadow-md mb-2 border border-rose-200">
+                        <img src="https://placehold.co/150x150/fbcfe8/881337?text=Eyes" alt="Eyes" class="w-full h-full object-cover">
+                    </div>
+                    <h4 class="font-semibold text-sm text-rose-900 mt-1">Your eyes</h4>
+                    <p class="text-[11px] text-neutral-500 mt-0.5">The safest place in the entire world.</p>
+                </div>
+                <!-- Reason 3 -->
+                <div class="flex flex-col items-center text-center bg-white p-4 rounded-xl shadow-sm border border-rose-100">
+                    <div class="w-16 h-16 rounded-full overflow-hidden shadow-md mb-2 border border-rose-200">
+                        <img src="https://placehold.co/150x150/fbcfe8/881337?text=Patience" alt="Patience" class="w-full h-full object-cover">
+                    </div>
+                    <h4 class="font-semibold text-sm text-rose-900 mt-1">Your patience</h4>
+                    <p class="text-[11px] text-neutral-500 mt-0.5">Always understanding when things get rough.</p>
+                </div>
+                <!-- Reason 4 -->
+                <div class="flex flex-col items-center text-center bg-white p-4 rounded-xl shadow-sm border border-rose-100">
+                    <div class="w-16 h-16 rounded-full overflow-hidden shadow-md mb-2 border border-rose-200">
+                        <img src="https://placehold.co/150x150/fbcfe8/881337?text=Kindness" alt="Kindness" class="w-full h-full object-cover">
+                    </div>
+                    <h4 class="font-semibold text-sm text-rose-900 mt-1">Your kindness</h4>
+                    <p class="text-[11px] text-neutral-500 mt-0.5">How gently you treat everyone around you.</p>
+                </div>
+                <!-- Reason 5 -->
+                <div class="flex flex-col items-center text-center bg-white p-4 rounded-xl shadow-sm border border-rose-100">
+                    <div class="w-16 h-16 rounded-full overflow-hidden shadow-md mb-2 border border-rose-200">
+                        <img src="https://placehold.co/150x150/fbcfe8/881337?text=Laugh" alt="Laugh" class="w-full h-full object-cover">
+                    </div>
+                    <h4 class="font-semibold text-sm text-rose-900 mt-1">The way you make me laugh</h4>
+                    <p class="text-[11px] text-neutral-500 mt-0.5">Even when I don't feel like smiling.</p>
+                </div>
+                <!-- Reason 6 -->
+                <div class="flex flex-col items-center text-center bg-white p-4 rounded-xl shadow-sm border border-rose-100">
+                    <div class="w-16 h-16 rounded-full overflow-hidden shadow-md mb-2 border border-rose-200">
+                        <img src="https://placehold.co/150x150/fbcfe8/881337?text=Everything" alt="Everything" class="w-full h-full object-cover">
+                    </div>
+                    <h4 class="font-semibold text-sm text-rose-900 mt-1">Everything about you</h4>
+                    <p class="text-[11px] text-neutral-500 mt-0.5">Every little detail makes you unique.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="maroon-card text-white p-6 md:p-10 rounded-2xl shadow-xl border border-rose-900/50">
+            <div class="text-center mb-6">
+                <h3 class="font-playfair text-2xl md:text-3xl font-bold tracking-wide italic text-rose-100">If I Had to Describe You in Three Words</h3>
+                <div class="w-16 h-0.5 bg-rose-400/50 mx-auto mt-2"></div>
+            </div>
+            <!-- 3 Columns Container -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4">
+                <!-- Word 1 -->
+                <div class="bg-rose-950/60 p-4 rounded-xl border border-rose-800/60 text-center shadow">
+                    <div class="w-24 h-24 mx-auto rounded-lg overflow-hidden mb-3 border-2 border-rose-300">
+                        <img src="https://placehold.co/150x150/9f1239/ffffff?text=Kind" alt="Kind" class="w-full h-full object-cover">
+                    </div>
+                    <h4 class="font-playfair text-xl font-bold text-rose-200 tracking-wider">kind</h4>
+                    <p class="text-xs text-rose-300 mt-1">You have a heart of gold that heals everyone you meet.</p>
+                </div>
+                <!-- Word 2 -->
+                <div class="bg-rose-950/60 p-4 rounded-xl border border-rose-800/60 text-center shadow">
+                    <div class="w-24 h-24 mx-auto rounded-lg overflow-hidden mb-3 border-2 border-rose-300">
+                        <img src="https://placehold.co/150x150/9f1239/ffffff?text=Funny" alt="Funny" class="w-full h-full object-cover">
+                    </div>
+                    <h4 class="font-playfair text-xl font-bold text-rose-200 tracking-wider">funny</h4>
+                    <p class="text-xs text-rose-300 mt-1">Your sense of humor turns ordinary moments into memories.</p>
+                </div>
+                <!-- Word 3 -->
+                <div class="bg-rose-950/60 p-4 rounded-xl border border-rose-800/60 text-center shadow">
+                    <div class="w-24 h-24 mx-auto rounded-lg overflow-hidden mb-3 border-2 border-rose-300">
+                        <img src="https://placehold.co/150x150/9f1239/ffffff?text=Strong" alt="Strong" class="w-full h-full object-cover">
+                    </div>
+                    <h4 class="font-playfair text-xl font-bold text-rose-200 tracking-wider">strong</h4>
+                    <p class="text-xs text-rose-300 mt-1">You face every obstacle with incredible grace and power.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="maroon-card text-white p-6 md:p-10 rounded-2xl shadow-xl border border-rose-900/50">
+            <div class="text-center mb-6">
+                <h3 class="font-playfair text-2xl md:text-3xl font-bold tracking-wide italic text-rose-100">A Letter for You</h3>
+                <div class="w-16 h-0.5 bg-rose-400/50 mx-auto mt-2"></div>
+            </div>
+            
+            <div class="flex flex-col md:flex-row gap-6 items-center">
+                <!-- Mini Collage Column -->
+                <div class="w-full md:w-1/3 flex flex-col gap-2">
+                    <div class="bg-white p-2 rounded shadow rotate-[-2deg]">
+                        <img src="https://placehold.co/200x150/e2e8f0/475569?text=Collage+1" alt="Collage 1" class="w-full h-24 object-cover rounded-sm">
+                    </div>
+                    <div class="bg-white p-2 rounded shadow rotate-[2deg]">
+                        <img src="https://placehold.co/200x150/cbd5e1/475569?text=Collage+2" alt="Collage 2" class="w-full h-24 object-cover rounded-sm">
+                    </div>
+                </div>
+                <!-- Letter Text Column -->
+                <div class="w-full md:w-2/3 bg-rose-950/70 p-5 md:p-6 rounded-xl border border-rose-800/50 text-rose-100 text-sm leading-relaxed letter-copy">
+                    <p class="mb-3 font-playfair italic text-rose-200 text-base">Dearest,</p>
+                    <p class="mb-3">
+                        Today marks another wonderful year of your existence. I wanted to create something special just for you to remind you how deeply appreciated you are. Thank you for always being your authentic, wonderful self.
+                    </p>
+                    <p class="mb-4">
+                        May this year bring you endless happiness, good health, and success in everything you pursue. I will always be here cheering for you every step of the way.
+                    </p>
+                    <p class="font-playfair italic text-rose-300 text-right">With all my love,<br>Your biggest fan</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="white-card text-[#4a2e35] p-6 md:p-10 rounded-2xl shadow-xl border border-rose-200/50 relative overflow-hidden">
+            <!-- Decorative Stars -->
+            <div class="absolute top-3 left-4 text-rose-400 text-sm animate-pulse">★</div>
+            <div class="absolute bottom-4 right-6 text-rose-400 text-sm animate-pulse">★</div>
+            <div class="absolute top-10 right-12 text-rose-300 text-xs">★</div>
+
+            <div class="text-center mb-6">
+                <h3 class="font-playfair text-xl md:text-2xl font-bold text-rose-900">The Little Things You Do That Make Me Smile</h3>
+            </div>
+
+            <!-- Sticky Note Style Card -->
+            <div class="max-w-md mx-auto bg-amber-50/90 text-neutral-800 p-6 rounded-lg shadow-lg border border-amber-200 relative transform rotate-1">
+                <!-- Pin icon simulation -->
+                <div class="absolute -top-3 left-1/2 transform -translate-x-1/2 w-4 h-4 bg-rose-700 rounded-full shadow border border-white"></div>
+                
+                <div class="flex items-center gap-4 mb-4">
+                    <div class="w-16 h-16 rounded-lg overflow-hidden shadow border border-amber-200 flex-shrink-0">
+                        <img src="https://placehold.co/150x150/fde68a/78350f?text=Sweet" alt="Sweet moment" class="w-full h-full object-cover">
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-rose-900 text-sm">Precious Little Habits</h4>
+                        <p class="text-xs text-neutral-600 mt-0.5">Small things that capture my heart every single day.</p>
+                    </div>
+                </div>
+
+                <ul class="text-xs space-y-2 text-neutral-700 list-disc list-inside font-medium border-t border-amber-200/60 pt-3">
+                    <li>you remember the smallest details</li>
+                    <li>you always check in on me</li>
+                    <li>you make ordinary days feel special</li>
+                </ul>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="relative z-10 w-full py-8 text-center text-rose-300/80 text-xs bg-[#2a070c] mt-12 border-t border-rose-900/60">
+        <p>Digital Birthday Template • Made with love & GSAP animations</p>
+    </footer>
+
+    <div id="memory-lightbox" class="memory-lightbox" role="dialog" aria-modal="true" aria-label="Foto memory" aria-hidden="true" hidden>
+        <button id="memory-lightbox-close" type="button" class="memory-lightbox__close" aria-label="Tutup foto">
+            <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+        </button>
+        <div class="memory-lightbox__polaroid">
+            <img id="memory-lightbox-image" class="memory-lightbox__image" alt="">
+            <p id="memory-lightbox-caption" class="memory-lightbox__caption"></p>
+        </div>
+    </div>
+
+    <!-- GSAP Animation Script -->
+    <script src="js/script.js"></script>
+</body>
+</html>
