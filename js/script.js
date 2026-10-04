@@ -1,288 +1,409 @@
-document.addEventListener("DOMContentLoaded", function () {
-    const birthdayLoader = document.getElementById("birthday-loader");
-    const birthdayLoaderProgress = document.getElementById("birthday-loader-progress");
-    const birthdayLoaderFill = document.getElementById("birthday-loader-progress-fill");
-    const loadingStartedAt = performance.now();
-    let loadingProgress = 0;
-    document.body.classList.add("is-loading");
+/**
+ * FELISHA OKTARINA — LUXURY EDITORIAL BIRTHDAY TRIBUTE
+ * Custom Interaction & Media System
+ */
 
-    const loadingProgressTimer = window.setInterval(() => {
-        loadingProgress = Math.min(92, loadingProgress + 2.8);
-        birthdayLoaderFill.style.width = `${loadingProgress}%`;
-        birthdayLoaderProgress.setAttribute("aria-valuenow", String(Math.round(loadingProgress)));
-    }, 60);
+document.addEventListener("DOMContentLoaded", () => {
+    "use strict";
 
-    // Register ScrollTrigger plugin
-    gsap.registerPlugin(ScrollTrigger);
-
-    const ambientContainer = document.querySelector(".ambient-particles");
-    const particleColors = ["#7d1d2c", "#c63d58", "#d8a448", "#f0a3b0"];
-    for (let index = 0; index < 44; index++) {
-        const particle = document.createElement("span");
-        particle.className = "ambient-particle";
-        particle.style.left = `${Math.random() * 100}%`;
-        particle.style.top = `${Math.random() * 100}%`;
-        particle.style.setProperty("--particle-size", `${4 + Math.random() * 4}px`);
-        particle.style.setProperty("--particle-color", particleColors[index % particleColors.length]);
-        particle.style.setProperty("--particle-duration", `${5 + Math.random() * 8}s`);
-        particle.style.setProperty("--particle-delay", `${-Math.random() * 10}s`);
-        particle.style.setProperty("--particle-drift", `${-12 + Math.random() * 24}px`);
-        ambientContainer.appendChild(particle);
+    /* ─────────────────────────────────────────────────────────────────
+       1. INTRO CURTAIN REVEAL (ELEGANT & FAST)
+    ───────────────────────────────────────────────────────────────── */
+    const introCurtain = document.getElementById("intro-curtain");
+    if (introCurtain) {
+        setTimeout(() => {
+            introCurtain.classList.add("is-hidden");
+            document.body.classList.remove("is-entering");
+        }, 850);
     }
 
-    // Animate Sections on Scroll
-    const sections = document.querySelectorAll("main > section");
-    sections.forEach((section, index) => {
-        gsap.fromTo(section,
-            { opacity: 0, y: 50 },
-            {
-                opacity: 1,
-                y: 0,
-                duration: 0.8,
-                ease: "power2.out",
-                scrollTrigger: {
-                    trigger: section,
-                    start: "top 85%",
-                    toggleActions: "play none none none"
-                }
-            }
-        );
-    });
-
-    // Party popper effect
-    const partyContainer = document.querySelector(".party-pop-container");
-    const triggers = document.querySelectorAll(".party-trigger");
-
-    const spawnPartyPopper = (event) => {
-        const rect = partyContainer.getBoundingClientRect();
-        const centerX = event.clientX || rect.width / 2;
-        const centerY = event.clientY || rect.height / 2;
-        const colors = ["#fca5a5", "#f9a8d4", "#fbbf24", "#bef264", "#c4b5fd", "#67e8f9", "#f87171", "#fde68a"];
-
-        for (let i = 0; i < 28; i++) {
-            const piece = document.createElement("span");
-            const angle = (Math.PI * 2 * i) / 28;
-            const distance = 40 + Math.random() * 120;
-            const dx = Math.cos(angle) * distance;
-            const dy = Math.sin(angle) * distance;
-            const rotation = (Math.random() * 360) - 180;
-
-            piece.className = "party-piece";
-            piece.style.left = `${centerX}px`;
-            piece.style.top = `${centerY}px`;
-            piece.style.background = colors[i % colors.length];
-            piece.style.setProperty("--dx", `${dx}px`);
-            piece.style.setProperty("--dy", `${dy}px`);
-            piece.style.setProperty("--rotation", `${rotation}deg`);
-
-            partyContainer.appendChild(piece);
-
-            setTimeout(() => piece.remove(), 1200);
+    /* ─────────────────────────────────────────────────────────────────
+       2. REAL AUDIO ENGINE (DEWA 19 PLAYLIST)
+    ───────────────────────────────────────────────────────────────── */
+    const playlist = [
+        {
+            title: "Aku Milikmu — Dewa 19",
+            src: "Aku Milikmu - Dewa 19 (Lyrics Video).mp3"
+        },
+        {
+            title: "Kangen — Dewa 19",
+            src: "Dewa 19 - Kangen (Official Audio).mp3"
         }
-    };
+    ];
 
-    triggers.forEach((trigger) => {
-        trigger.addEventListener("click", spawnPartyPopper);
-    });
+    let currentTrackIndex = 0;
+    let isPlaying = false;
 
-    const memoryImages = document.querySelectorAll(".memory-section img");
-    const memoryLightbox = document.getElementById("memory-lightbox");
-    const memoryLightboxImage = document.getElementById("memory-lightbox-image");
-    const memoryLightboxCaption = document.getElementById("memory-lightbox-caption");
-    const memoryLightboxClose = document.getElementById("memory-lightbox-close");
-    let activeMemoryImage = null;
-    let lightboxCloseTimeout;
+    const nativeAudio   = document.getElementById("native-audio");
+    const audioDock     = document.getElementById("audio-dock");
+    const dockPlayBtn   = document.getElementById("dock-play-btn");
+    const playIcon      = document.getElementById("play-icon");
+    const dockPrevBtn   = document.getElementById("dock-prev-btn");
+    const dockNextBtn   = document.getElementById("dock-next-btn");
+    const trackTitleEl  = document.getElementById("track-title");
+    const navSoundBtn   = document.getElementById("nav-sound-btn");
+    const navSoundLabel = document.getElementById("nav-sound-label");
 
-    const closeMemoryLightbox = () => {
-        if (memoryLightbox.hidden) return;
-        memoryLightbox.classList.remove("is-open");
-        memoryLightbox.setAttribute("aria-hidden", "true");
-        document.body.style.overflow = "";
-        lightboxCloseTimeout = setTimeout(() => {
-            memoryLightbox.hidden = true;
-            activeMemoryImage?.focus();
-        }, 220);
-    };
+    function loadTrack(index) {
+        if (!nativeAudio) return;
+        currentTrackIndex = (index + playlist.length) % playlist.length;
+        const track = playlist[currentTrackIndex];
+        nativeAudio.src = encodeURI(track.src);
+        if (trackTitleEl) {
+            trackTitleEl.textContent = track.title;
+        }
+    }
 
-    const openMemoryLightbox = (image) => {
-        clearTimeout(lightboxCloseTimeout);
-        activeMemoryImage = image;
-        memoryLightboxImage.src = image.src;
-        memoryLightboxImage.alt = image.alt;
-        const memoryCard = image.closest(".bg-white");
-        const caption = memoryCard?.querySelector("p")?.textContent.trim() ?? image.alt;
-        memoryLightboxCaption.textContent = caption;
-        memoryLightbox.setAttribute("aria-label", caption);
-        memoryLightbox.hidden = false;
-        memoryLightbox.setAttribute("aria-hidden", "false");
-        document.body.style.overflow = "hidden";
-        requestAnimationFrame(() => memoryLightbox.classList.add("is-open"));
-        memoryLightboxClose.focus();
-    };
+    function playAudio() {
+        if (!nativeAudio) return;
+        nativeAudio.play().then(() => {
+            isPlaying = true;
+            updatePlayUI(true);
+        }).catch(() => {
+            // Autoplay restriction or user interaction required
+            isPlaying = false;
+            updatePlayUI(false);
+        });
+    }
 
-    memoryImages.forEach((image) => {
-        image.setAttribute("role", "button");
-        image.setAttribute("tabindex", "0");
-        image.setAttribute("aria-haspopup", "dialog");
-        image.setAttribute("aria-label", `Perbesar ${image.alt}`);
-        image.addEventListener("click", () => openMemoryLightbox(image));
-        image.addEventListener("keydown", (event) => {
-            if (event.key === "Enter" || event.key === " ") {
-                event.preventDefault();
-                openMemoryLightbox(image);
+    function pauseAudio() {
+        if (!nativeAudio) return;
+        nativeAudio.pause();
+        isPlaying = false;
+        updatePlayUI(false);
+    }
+
+    function toggleAudio() {
+        if (isPlaying) {
+            pauseAudio();
+        } else {
+            playAudio();
+        }
+    }
+
+    function updatePlayUI(playing) {
+        if (playIcon) {
+            playIcon.className = playing ? "fa-solid fa-pause" : "fa-solid fa-play";
+        }
+        if (audioDock) {
+            audioDock.classList.toggle("is-playing", playing);
+        }
+        if (navSoundBtn) {
+            navSoundBtn.classList.toggle("is-playing", playing);
+        }
+        if (navSoundLabel) {
+            navSoundLabel.textContent = playing ? "Jeda Musik" : "Putar Lagu";
+        }
+    }
+
+    // Init track
+    loadTrack(0);
+
+    if (dockPlayBtn) {
+        dockPlayBtn.addEventListener("click", toggleAudio);
+    }
+    if (navSoundBtn) {
+        navSoundBtn.addEventListener("click", toggleAudio);
+    }
+    if (dockNextBtn) {
+        dockNextBtn.addEventListener("click", () => {
+            loadTrack(currentTrackIndex + 1);
+            playAudio();
+        });
+    }
+    if (dockPrevBtn) {
+        dockPrevBtn.addEventListener("click", () => {
+            loadTrack(currentTrackIndex - 1);
+            playAudio();
+        });
+    }
+    if (nativeAudio) {
+        nativeAudio.addEventListener("ended", () => {
+            loadTrack(currentTrackIndex + 1);
+            playAudio();
+        });
+    }
+
+    /* ─────────────────────────────────────────────────────────────────
+       3. CANDLE RITUAL ("MAKE A WISH")
+    ───────────────────────────────────────────────────────────────── */
+    const candleApparatus = document.getElementById("candle-apparatus");
+    const blowBtn         = document.getElementById("blow-btn");
+    const reigniteBtn     = document.getElementById("reignite-btn");
+    const wishReveal      = document.getElementById("wish-reveal");
+    const candlePrompt    = document.getElementById("candle-prompt");
+    const candleStage     = document.querySelector(".candle-stage");
+
+    function extinguishCandle() {
+        if (!candleApparatus || candleApparatus.classList.contains("is-extinguished")) return;
+
+        candleApparatus.classList.add("is-extinguished");
+        if (candleStage) candleStage.classList.add("is-extinguished");
+        if (candlePrompt) candlePrompt.style.display = "none";
+
+        setTimeout(() => {
+            if (wishReveal) {
+                wishReveal.hidden = false;
+            }
+        }, 700);
+    }
+
+    function reigniteCandle() {
+        if (!candleApparatus) return;
+
+        candleApparatus.classList.remove("is-extinguished");
+        if (candleStage) candleStage.classList.remove("is-extinguished");
+        if (wishReveal) wishReveal.hidden = true;
+        if (candlePrompt) candlePrompt.style.display = "block";
+    }
+
+    if (candleApparatus) {
+        candleApparatus.addEventListener("click", extinguishCandle);
+        candleApparatus.addEventListener("keydown", (e) => {
+            if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                extinguishCandle();
+            }
+        });
+    }
+    if (blowBtn) {
+        blowBtn.addEventListener("click", extinguishCandle);
+    }
+    if (reigniteBtn) {
+        reigniteBtn.addEventListener("click", reigniteCandle);
+    }
+
+    /* ─────────────────────────────────────────────────────────────────
+       4. VISUAL JOURNAL LIGHTBOX
+    ───────────────────────────────────────────────────────────────── */
+    const galleryCards  = document.querySelectorAll(".gallery-card");
+    const lightbox      = document.getElementById("lightbox");
+    const lightboxImg   = document.getElementById("lightbox-img");
+    const lightboxCap   = document.getElementById("lightbox-caption");
+    const lightboxClose = document.getElementById("lightbox-close");
+
+    galleryCards.forEach(card => {
+        card.addEventListener("click", () => {
+            const img = card.querySelector("img");
+            const caption = card.dataset.caption || "";
+            if (img && lightbox && lightboxImg) {
+                lightboxImg.src = img.src;
+                lightboxImg.alt = img.alt || "Kenangan";
+                if (lightboxCap) lightboxCap.textContent = caption;
+                lightbox.hidden = false;
+                requestAnimationFrame(() => {
+                    lightbox.classList.add("is-open");
+                });
             }
         });
     });
 
-    memoryLightboxClose.addEventListener("click", closeMemoryLightbox);
-    memoryLightbox.addEventListener("click", (event) => {
-        if (event.target === memoryLightbox) closeMemoryLightbox();
-    });
-    document.addEventListener("keydown", (event) => {
-        if (event.key === "Escape") closeMemoryLightbox();
-    });
+    function closeLightbox() {
+        if (!lightbox) return;
+        lightbox.classList.remove("is-open");
+        setTimeout(() => {
+            lightbox.hidden = true;
+        }, 400);
+    }
 
-    const birthdayMessage = document.getElementById("birthday-message");
-    const birthdayMessageToggle = document.getElementById("birthday-message-toggle");
-    birthdayMessageToggle.addEventListener("click", () => {
-        const shouldRevealMessage = birthdayMessage.hidden;
-        birthdayMessage.hidden = !shouldRevealMessage;
-        birthdayMessageToggle.setAttribute("aria-expanded", String(shouldRevealMessage));
-        birthdayMessageToggle.setAttribute("aria-label", shouldRevealMessage ? "Sembunyikan pesan ulang tahun" : "Tampilkan pesan ulang tahun");
-
-        if (shouldRevealMessage) {
-            gsap.fromTo(birthdayMessage, { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.45, ease: "power2.out" });
+    if (lightboxClose) {
+        lightboxClose.addEventListener("click", closeLightbox);
+    }
+    if (lightbox) {
+        lightbox.addEventListener("click", (e) => {
+            if (e.target === lightbox) {
+                closeLightbox();
+            }
+        });
+    }
+    document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && lightbox && !lightbox.hidden) {
+            closeLightbox();
         }
     });
 
-    const musicToggle = document.getElementById("music-toggle");
-    const musicProgress = document.getElementById("music-progress");
-    const musicCurrentTime = document.getElementById("music-current-time");
-    const musicDuration = document.getElementById("music-duration");
-    const musicTrackTitle = document.getElementById("music-track-title");
-    const musicPlayer = document.getElementById("music-player");
-    const musicExpand = document.getElementById("music-expand");
-    const musicAudio = document.getElementById("birthday-music");
-    const musicTracks = [
-        { title: "Aku Milikmu - Dewa 19", source: "Aku%20Milikmu%20-%20Dewa%2019%20(Lyrics%20Video).mp3" },
-        { title: "Kangen - Dewa 19", source: "Dewa%2019%20-%20Kangen%20%28Official%20Audio%29.mp3" }
+    /* ─────────────────────────────────────────────────────────────────
+       5. PRIVATE WISHBOARD (LOCALSTORAGE PERSISTENCE)
+    ───────────────────────────────────────────────────────────────── */
+    const wishForm   = document.getElementById("wish-form");
+    const wishesFeed = document.getElementById("wishes-feed");
+
+    const STORAGE_KEY = "felisha_birthday_wishes_v1";
+
+    const defaultWishes = [
+        {
+            author: "Raden",
+            time: "14 Okt 2024",
+            message: "Selamat memperingati hari kelahiran, Felisha. Semoga setiap doa dan ikhtiar luhur yang Anda panjatkan senantiasa dikabulkan dengan cara yang paling mulia oleh Tuhan Yang Maha Esa. Senantiasa dilimpahi kesehatan, kedamaian, dan keberkahan hidup."
+        },
+        {
+            author: "Keluarga & Sahabat",
+            time: "14 Okt 2024",
+            message: "Barakallah fii umrik Felisha Oktarina Kustantri. Semoga senantiasa dianugerahi kelancaran dalam setiap urusan, umur yang berkah, serta kebahagiaan yang paripurna di setiap langkah."
+        }
     ];
-    let currentTrackIndex = 0;
-    let selectedMusicName = musicTracks[currentTrackIndex].title;
-    let activeTrackUrl = "";
-    let trackLoadRequest = 0;
 
-    const formatMusicTime = (seconds) => {
-        if (!Number.isFinite(seconds)) return "0:00";
-        const minutes = Math.floor(seconds / 60);
-        const remainingSeconds = Math.floor(seconds % 60).toString().padStart(2, "0");
-        return `${minutes}:${remainingSeconds}`;
-    };
-
-    const updateMusicProgress = () => {
-        const duration = Number.isFinite(musicAudio.duration) ? musicAudio.duration : 0;
-        const progress = duration ? (musicAudio.currentTime / duration) * Number(musicProgress.max) : 0;
-        musicProgress.value = String(progress);
-        musicCurrentTime.textContent = formatMusicTime(musicAudio.currentTime);
-        musicDuration.textContent = formatMusicTime(duration);
-    };
-
-    const setMusicControlsExpanded = (expanded) => {
-        musicPlayer.classList.toggle("is-expanded", expanded);
-        musicExpand.setAttribute("aria-expanded", String(expanded));
-        musicExpand.setAttribute("aria-label", expanded ? "Sembunyikan kontrol musik" : "Tampilkan kontrol musik");
-        musicExpand.title = expanded ? "Sembunyikan kontrol musik" : "Tampilkan kontrol musik";
-    };
-
-    const updateMusicToggle = () => {
-        const isPlaying = !musicAudio.paused;
-        musicToggle.innerHTML = `<i class="fa-solid fa-${isPlaying ? "pause" : "play"}" aria-hidden="true"></i>`;
-        musicToggle.setAttribute("aria-label", `${isPlaying ? "Pause" : "Play"} music: ${selectedMusicName}`);
-        musicToggle.title = selectedMusicName;
-        musicTrackTitle.textContent = selectedMusicName;
-        musicTrackTitle.title = selectedMusicName;
-        musicPlayer.classList.add("is-collapsed");
-    };
-
-    const syncMusicPlaybackState = () => {
-        updateMusicToggle();
-        setMusicControlsExpanded(false);
-    };
-
-    const playTrack = async (index, autoplay = true) => {
-        currentTrackIndex = (index + musicTracks.length) % musicTracks.length;
-        const track = musicTracks[currentTrackIndex];
-        const requestId = ++trackLoadRequest;
-        selectedMusicName = track.title;
-        musicAudio.pause();
-        musicAudio.removeAttribute("src");
-        musicAudio.load();
-        if (activeTrackUrl) URL.revokeObjectURL(activeTrackUrl);
-        activeTrackUrl = "";
-        musicToggle.disabled = true;
-        updateMusicToggle();
-        updateMusicProgress();
-
+    function getStoredWishes() {
         try {
-            const response = await fetch(track.source);
-            if (!response.ok) throw new Error(`Unable to load ${track.title}`);
-            const audioBlob = await response.blob();
-            if (requestId !== trackLoadRequest) return;
-
-            activeTrackUrl = URL.createObjectURL(audioBlob);
-            musicAudio.src = activeTrackUrl;
-            musicAudio.load();
-            musicToggle.disabled = false;
-            updateMusicToggle();
-            if (autoplay) musicAudio.play().catch(updateMusicToggle);
-        } catch (error) {
-            if (requestId !== trackLoadRequest) return;
-            musicToggle.disabled = false;
-            console.error(error);
-            updateMusicToggle();
+            const saved = localStorage.getItem(STORAGE_KEY);
+            return saved ? JSON.parse(saved) : defaultWishes;
+        } catch {
+            return defaultWishes;
         }
-    };
+    }
 
-    musicToggle.addEventListener("click", () => {
-        if (musicAudio.paused) {
-            musicAudio.play().catch(updateMusicToggle);
+    function renderWishes() {
+        if (!wishesFeed) return;
+        const wishes = getStoredWishes();
+        wishesFeed.innerHTML = "";
+
+        wishes.forEach(item => {
+            const card = document.createElement("div");
+            card.className = "wish-card-item";
+            card.innerHTML = `
+                <div class="wish-card-header">
+                    <span class="wish-card-author">${escapeHTML(item.author)}</span>
+                    <span class="wish-card-time">${escapeHTML(item.time)}</span>
+                </div>
+                <p class="wish-card-msg">${escapeHTML(item.message)}</p>
+            `;
+            wishesFeed.appendChild(card);
+        });
+    }
+
+    function escapeHTML(str) {
+        return str.replace(/[&<>'"]/g, 
+            tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
+        );
+    }
+
+    if (wishForm) {
+        wishForm.addEventListener("submit", (e) => {
+            e.preventDefault();
+            const authorInput  = document.getElementById("wish-author");
+            const messageInput = document.getElementById("wish-message");
+
+            const author  = authorInput?.value.trim();
+            const message = messageInput?.value.trim();
+
+            if (!author || !message) return;
+
+            const now = new Date();
+            const timeStr = `${now.getDate()} Okt ${now.getFullYear()}`;
+
+            const newWish = { author, time: timeStr, message };
+            const currentWishes = getStoredWishes();
+            currentWishes.unshift(newWish);
+
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(currentWishes));
+            } catch (err) {
+                console.error("Storage error:", err);
+            }
+
+            renderWishes();
+
+            if (authorInput) authorInput.value = "";
+            if (messageInput) messageInput.value = "";
+        });
+    }
+
+    renderWishes();
+
+    /* ─────────────────────────────────────────────────────────────────
+       6. ROYAL ENVELOPE INTERACTION (SLIDING LETTER)
+    ───────────────────────────────────────────────────────────────── */
+    const envelopeStage        = document.getElementById("envelope-stage");
+    const envelopeTriggerBtn   = document.getElementById("envelope-trigger-btn");
+    const envelopeTriggerLabel = document.getElementById("envelope-trigger-label");
+    const waxSeal              = document.getElementById("wax-seal");
+    const btnRefoldTop         = document.getElementById("btn-refold-top");
+    const btnRefoldBottom      = document.getElementById("btn-refold-bottom");
+    const heroLetterBtn        = document.querySelector('a[href="#letter"]');
+
+    function openEnvelope() {
+        if (!envelopeStage || envelopeStage.classList.contains("is-open")) return;
+        envelopeStage.classList.add("is-open");
+        if (envelopeTriggerLabel) {
+            envelopeTriggerLabel.textContent = "Lipat Kembali Warkat";
+        }
+        setTimeout(() => {
+            const letterEl = document.getElementById("envelope-letter");
+            if (letterEl) {
+                const rect = letterEl.getBoundingClientRect();
+                if (rect.top < 100 || rect.top > 350) {
+                    window.scrollBy({
+                        top: rect.top - 120,
+                        behavior: "smooth"
+                    });
+                }
+            }
+        }, 650);
+    }
+
+    function closeEnvelope() {
+        if (!envelopeStage || !envelopeStage.classList.contains("is-open")) return;
+        envelopeStage.classList.remove("is-open");
+        if (envelopeTriggerLabel) {
+            envelopeTriggerLabel.textContent = "Buka Warkat Penghormatan";
+        }
+        const envelopeContainer = document.getElementById("envelope-container");
+        if (envelopeContainer) {
+            envelopeContainer.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
+    }
+
+    function toggleEnvelope() {
+        if (!envelopeStage) return;
+        if (envelopeStage.classList.contains("is-open")) {
+            closeEnvelope();
         } else {
-            musicAudio.pause();
+            openEnvelope();
         }
-    });
+    }
 
-    musicExpand.addEventListener("click", () => {
-        setMusicControlsExpanded(!musicPlayer.classList.contains("is-expanded"));
-    });
+    if (waxSeal) {
+        waxSeal.addEventListener("click", openEnvelope);
+    }
+    if (envelopeTriggerBtn) {
+        envelopeTriggerBtn.addEventListener("click", toggleEnvelope);
+    }
+    if (btnRefoldTop) {
+        btnRefoldTop.addEventListener("click", closeEnvelope);
+    }
+    if (btnRefoldBottom) {
+        btnRefoldBottom.addEventListener("click", closeEnvelope);
+    }
+    if (heroLetterBtn) {
+        heroLetterBtn.addEventListener("click", () => {
+            setTimeout(openEnvelope, 550);
+        });
+    }
 
-    document.getElementById("music-previous-track").addEventListener("click", () => playTrack(currentTrackIndex - 1));
-    document.getElementById("music-next-track").addEventListener("click", () => playTrack(currentTrackIndex + 1));
-    musicProgress.addEventListener("input", () => {
-        if (!Number.isFinite(musicAudio.duration)) return;
-        musicAudio.currentTime = (Number(musicProgress.value) / Number(musicProgress.max)) * musicAudio.duration;
-        updateMusicProgress();
-    });
+    /* ─────────────────────────────────────────────────────────────────
+       7. ACTIVE NAVIGATION SPY
+    ───────────────────────────────────────────────────────────────── */
+    const sections = document.querySelectorAll("section[id]");
+    const navLinks = document.querySelectorAll(".nav-link");
 
-    musicAudio.addEventListener("play", syncMusicPlaybackState);
-    musicAudio.addEventListener("pause", syncMusicPlaybackState);
-    musicAudio.addEventListener("ended", syncMusicPlaybackState);
-    musicAudio.addEventListener("loadedmetadata", updateMusicProgress);
-    musicAudio.addEventListener("durationchange", updateMusicProgress);
-    musicAudio.addEventListener("timeupdate", updateMusicProgress);
-    updateMusicToggle();
-    updateMusicProgress();
-    playTrack(currentTrackIndex, false);
-    const minimumDuration = 1500;
-    const remainingTime = Math.max(0, minimumDuration - (performance.now() - loadingStartedAt));
-    window.setTimeout(() => {
-        window.clearInterval(loadingProgressTimer);
-        birthdayLoaderFill.style.width = "100%";
-        birthdayLoaderProgress.setAttribute("aria-valuenow", "100");
-        window.setTimeout(() => {
-            birthdayLoader.classList.add("is-hidden");
-            document.body.classList.remove("is-loading");
-            window.setTimeout(() => { birthdayLoader.hidden = true; }, 500);
-        }, 220);
-    }, remainingTime);
+    window.addEventListener("scroll", () => {
+        let current = "";
+        const scrollY = window.pageYOffset;
+
+        sections.forEach(section => {
+            const sectionTop = section.offsetTop - 180;
+            const sectionHeight = section.offsetHeight;
+            if (scrollY >= sectionTop && scrollY < sectionTop + sectionHeight) {
+                current = section.getAttribute("id");
+            }
+        });
+
+        navLinks.forEach(link => {
+            link.classList.remove("active");
+            if (link.getAttribute("href") === `#${current}`) {
+                link.classList.add("active");
+            }
+        });
+    }, { passive: true });
 
 });
